@@ -34,7 +34,7 @@ class Jquery_validation {
     private function build_script($form_name) 
     {
         $script = '$(document).ready(function() { $("'.$form_name.'").validate({rules: %s,messages: %s});});';
-        return sprintf($script, $this->rules, $this->messages);
+        return sprintf($script, $this->rules, ($this->messages ? $this->messages : '{}'));
     }
     /**
     * Set validation rules
