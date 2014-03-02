@@ -57,6 +57,10 @@ class Jquery_validation {
                     // Check if we have similar rule in jQuery plugin
                     if($this->is_js_rule($match[1])) 
                     {
+						if($match[1] === "matches")
+							$match[2] = "#".$match[2];
+						if($match[1] === "greater_than" || $match[1] === "less_than" || $match[1] === "min_length" || $match[1] === "max_length")
+							$match[2] = (float)$match[2];
                         // If so, let's use jQuery rule name instead of CI's one
                         $json[$v['field']][$this->get_js_rule($match[1])] = $match[2];	
                     }
