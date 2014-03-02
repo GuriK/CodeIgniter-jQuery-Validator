@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Jquery_validation {
     private $rules;    // json rules for jQuery validator
@@ -23,7 +23,7 @@ class Jquery_validation {
     {
         return $this->build_script($form_name);
     }
-    
+
     /**
     * Build jQuery validationcode
     *
@@ -31,46 +31,46 @@ class Jquery_validation {
     * @param  string
     * @return string
     */
-    private function build_script($form_name) 
+    private function build_script($form_name)
     {
         $script = '$(document).ready(function() { $("'.$form_name.'").validate({rules: %s,messages: %s});});';
         return sprintf($script, $this->rules, ($this->messages ? $this->messages : '{}'));
     }
     /**
     * Set validation rules
-    * 
+    *
     * @access public
     * @param  array
     * @return string json formatted string
     */
-    public function set_rules($rules) 
+    public function set_rules($rules)
     {
-        foreach ($rules as $k => $v) 
+        foreach ($rules as $k => $v)
         {
-            // CI uses "|" delimiter to apply different rules. Let's split it ... 
+            // CI uses "|" delimiter to apply different rules. Let's split it ...
             $expl_rules = explode('|', $v['rules']);
-            foreach ($expl_rules as $index => $rule) 
-            {   
+            foreach ($expl_rules as $index => $rule)
+            {
                 // check and parse rule if it has parameter. eg. min_length[2]
                 if (preg_match("/(.*?)\[(.*)\]/", $rule, $match))
                 {
                     // Check if we have similar rule in jQuery plugin
-                    if($this->is_js_rule($match[1])) 
+                    if($this->is_js_rule($match[1]))
                     {
-						if($match[1] === "matches")
-							$match[2] = "#".$match[2];
-						if($match[1] === "greater_than" || $match[1] === "less_than" || $match[1] === "min_length" || $match[1] === "max_length")
-							$match[2] = (float)$match[2];
+                        if($match[1] === "matches")
+                            $match[2] = "#".$match[2];
+                        if($match[1] === "greater_than" || $match[1] === "less_than" || $match[1] === "min_length" || $match[1] === "max_length")
+                            $match[2] = (float)$match[2];
                         // If so, let's use jQuery rule name instead of CI's one
-                        $json[$v['field']][$this->get_js_rule($match[1])] = $match[2];	
+                        $json[$v['field']][$this->get_js_rule($match[1])] = $match[2];
                     }
                 }
-                // jQuery plugin doesn't support callback like CI, so we'll ignore it and convert everything else 
+                // jQuery plugin doesn't support callback like CI, so we'll ignore it and convert everything else
                 elseif (!preg_match("/callback\_/",$rule))
                 {
-                    if($this->is_js_rule($rule)) 
+                    if($this->is_js_rule($rule))
                     {
-                        $json[$v['field']][$this->get_js_rule($rule)] = TRUE;	
+                        $json[$v['field']][$this->get_js_rule($rule)] = TRUE;
                     }
                 }
             }
@@ -78,7 +78,7 @@ class Jquery_validation {
         $this->rules = json_encode($json);
         return $this->rules;
     }
-    
+
     /**
     * check if we have alternative rule of CI in jQuery
     *
@@ -86,18 +86,18 @@ class Jquery_validation {
     * @param  string
     * @return bool
     */
-    private function is_js_rule($filter) 
+    private function is_js_rule($filter)
     {
         if (in_array($filter,array_keys($this->js_rules)))
         {
             return TRUE;
-        } 
-        else 
+        }
+        else
         {
             return FALSE;
         }
     }
-    
+
     /**
     * Get rule name
     *
@@ -111,28 +111,28 @@ class Jquery_validation {
     {
         return $this->js_rules[$filter];
     }
-    
+
     /**
     * Set messages
     *
     * set custom error messages on each rule for jQuery validation
-    * 
+    *
     * @access public
     * @param  array
     * @return string json formated string
     */
-    public function set_messages($messages) 
+    public function set_messages($messages)
     {
         // We do same as above in set_rules function  check and convert CI to jQuery rules
-        foreach ($messages as $k=>$v) 
+        foreach ($messages as $k=>$v)
         {
-            foreach ($v as $a=>$v) 
+            foreach ($v as $a=>$v)
             {
-                if ($this->is_js_rule($a)) 
+                if ($this->is_js_rule($a))
                 {
                     // Remove CI rule name ...
                     unset($messages[$k][$a]);
-                    // and insert jQuery's one 
+                    // and insert jQuery's one
                     $messages[$k][$this->get_js_rule($a)] = $v;
                 }
             }
